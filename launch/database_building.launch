@@ -1,0 +1,16 @@
+<launch>
+    <arg name="database_env" default="kitti"/>
+    <node pkg="scancontext_ros" type="database_building" name="database_building" output="screen">
+
+        <param name="VoxelGirdFilter_size_x" type="double" value="0.5"/>
+        <param name="VoxelGirdFilter_size_y" type="double" value="0.5"/>
+        <param name="VoxelGirdFilter_size_z" type="double" value="0.5"/>
+
+        <param name="folder_path_to_save" type="string"
+               value="$(find scancontext_ros)/../../database/$(arg database_env)/"/>
+
+        <param name="pointcloud_topic_name" type="string" value="/kitti/velo/pointcloud"/>
+
+    </node>
+
+</launch>
