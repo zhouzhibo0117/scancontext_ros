@@ -4,20 +4,37 @@
 
 #include "scancontext_ros/scan_context.h"
 
-double GetTheta(double x, double y) {
-    double theta = atan2(y, x);
-    if (theta <= 0) {
-        theta += 2 * M_PI;
-    }
-    return theta;
+ScanContext::ScanContext(int ring_num,
+                         int sector_num,
+                         double max_range,
+                         PointCloudTypePtr &cloud,
+                         int bin_points_min = 5,
+                         double filter_leaf_size_x = 0.0,
+                         double filter_leaf_size_y = 0.0,
+                         double filter_leaf_size_z = 0.0) : ring_num_(ring_num),
+                                                            sector_num_(sector_num),
+                                                            point_range_max_(max_range),
+                                                            bin_points_min_(bin_points_min),
+                                                            filter_leaf_size_x_(filter_leaf_size_x),
+                                                            filter_leaf_size_y_(filter_leaf_size_y),
+                                                            filter_leaf_size_z_(filter_leaf_size_z) {
+    ImageInitialization();
+
+    SetScanContextID(cloud);
+
+    PointCloud2Image(cloud);
+
+    Image2RingKey();
+
+
 }
 
-std::string Int2FixedString(int num, unsigned fix_num) {
-    char str[99];
-    sprintf(str, "%0*d", fix_num, num);
-    return str;
+ScanContext::ScanContext(const cv::Mat &image,
+                         const std::string &id) : image_(image),
+                                                  ID_(id) {
+    GetImageInfo();
+    Image2RingKey();
 }
-
 
 void ScanContext::PointCloud2Image(PointCloudTypePtr &cloud) {
 
@@ -102,7 +119,6 @@ void ScanContext::GetImageInfo() {
     sector_num_ = image_.size().width;
 }
 
-
 void ScanContext::Image2RingKey() {
     for (int i = 0; i < ring_num_; ++i) {
         int non_zero_element_num = 0;
@@ -111,15 +127,15 @@ void ScanContext::Image2RingKey() {
                 non_zero_element_num++;
             }
         }
-        ring_key_.push_back(non_zero_element_num);
+        ring_key_.push_back(double(non_zero_element_num));
     }
+
+    // Normalization.
+    for (int i = 0; i < ring_num_; ++i) {
+        ring_key_[i] /= sector_num_;
+    }
+
 }
-
-//void ScanContext::ReadFromImageFile(const std::string &file_path) {
-//    image_ = cv::imread(file_path);
-//}
-//
-
 
 void ScanContext::SetScanContextID(const PointCloudTypePtr &cloud) {
     uint64_t timestamp = cloud->header.stamp;
@@ -130,37 +146,5 @@ void ScanContext::SetScanContextID(const PointCloudTypePtr &cloud) {
     std::string str_decimal = Int2FixedString(decimal_part, 3);
 
     ID_ = str_integer + "_" + str_decimal;
-}
-
-ScanContext::ScanContext(int ring_num,
-                         int sector_num,
-                         double max_range,
-                         PointCloudTypePtr &cloud,
-                         int bin_points_min = 5,
-                         double filter_leaf_size_x = 0.0,
-                         double filter_leaf_size_y = 0.0,
-                         double filter_leaf_size_z = 0.0) : ring_num_(ring_num),
-                                                            sector_num_(sector_num),
-                                                            point_range_max_(max_range),
-                                                            bin_points_min_(bin_points_min),
-                                                            filter_leaf_size_x_(filter_leaf_size_x),
-                                                            filter_leaf_size_y_(filter_leaf_size_y),
-                                                            filter_leaf_size_z_(filter_leaf_size_z) {
-    ImageInitialization();
-
-    SetScanContextID(cloud);
-
-    PointCloud2Image(cloud);
-
-    Image2RingKey();
-
-
-}
-
-ScanContext::ScanContext(const cv::Mat &image,
-                         const std::string &id) : image_(image),
-                                                  ID_(id) {
-    GetImageInfo();
-    Image2RingKey();
 }
 

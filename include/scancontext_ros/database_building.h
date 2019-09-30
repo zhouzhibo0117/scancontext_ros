@@ -5,12 +5,10 @@
 #ifndef SRC_DATABASE_BUILDING_H
 #define SRC_DATABASE_BUILDING_H
 
-#include "pointcloud_base.h"
 #include "scan_context.h"
 
 // ROS include
 #include <ros/ros.h>
-#include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
 

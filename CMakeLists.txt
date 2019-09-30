@@ -136,28 +136,45 @@ include_directories(
 ## either from message generation or dynamic reconfigure
 # add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+set(COMMON_SRC_LIST
+        src/scan_context.cpp
+        src/scan_context_matcher.cpp
+        src/pointcloud_base.cpp
+        src/file_io_util.cpp
+        src/math_util.cpp
+        src/str_util.cpp)
+
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_database_building
         src/database_building_node.cpp
         src/database_building.cpp
-        src/scan_context.cpp
+        ${COMMON_SRC_LIST})
+
+add_executable(${PROJECT_NAME}_place_recognition
+        src/place_recognition_node.cpp
         src/place_recognition.cpp
-        src/pointcloud_base.cpp)
+        ${COMMON_SRC_LIST})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 set_target_properties(${PROJECT_NAME}_database_building PROPERTIES OUTPUT_NAME database_building PREFIX "")
+set_target_properties(${PROJECT_NAME}_place_recognition PROPERTIES OUTPUT_NAME place_recognition PREFIX "")
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 add_dependencies(${PROJECT_NAME}_database_building ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}_place_recognition ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_database_building
+        ${catkin_LIBRARIES}
+        ${OpenCV_LIBRARIES}
+        )
+target_link_libraries(${PROJECT_NAME}_place_recognition
         ${catkin_LIBRARIES}
         ${OpenCV_LIBRARIES}
         )

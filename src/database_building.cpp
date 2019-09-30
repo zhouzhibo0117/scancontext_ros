@@ -20,13 +20,13 @@ DatabaseBuilding::DatabaseBuilding() {
 
 void DatabaseBuilding::PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr &cloud_msg) {
 
-    // TODO: ROS message to PCL message.
+    // ROS message to PCL message.
     // Transform sensor_msgs::PointCloud2 to PCL class.
     PointCloudTypePtr cloud_frame(new PointCloudType());
     pcl::fromROSMsg(*cloud_msg, *cloud_frame);
     cloud_frame->header.stamp = cloud_msg->header.stamp.toSec() * 1e6;
 
-    // TODO: scan context
+    // scan context
     ScanContext sc(20,
                    60,
                    100,
@@ -36,7 +36,7 @@ void DatabaseBuilding::PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr
                    leaf_size_y_,
                    leaf_size_z_);
 
-    // TODO: save image
+    // Save image
     SaveScanContextImageFile(sc, image_folder_path_);
 
 

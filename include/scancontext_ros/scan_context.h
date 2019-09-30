@@ -6,13 +6,17 @@
 #define SRC_SCAN_CONTEXT_H
 
 #include "pointcloud_base.h"
+#include "util/math_util.h"
+#include "util/str_util.h"
 
-#include "opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
 
 #include <vector>
 
 class ScanContext {
 public:
+    ScanContext() {};
+
     ScanContext(int ring_num,
                 int sector_num,
                 double max_range,
@@ -39,7 +43,7 @@ private:
 public:
     std::string ID_;
     cv::Mat image_;
-    std::vector<int> ring_key_;
+    std::vector<double> ring_key_;
 
 private:
     int sector_num_;
