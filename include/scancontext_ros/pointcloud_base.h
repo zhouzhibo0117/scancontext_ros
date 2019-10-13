@@ -9,7 +9,7 @@
 #include "pcl/point_types.h"
 #include "pcl/filters/voxel_grid.h"
 
-typedef pcl::PointXYZI PointType;
+typedef pcl::PointXYZ PointType;
 typedef pcl::PointCloud<PointType> PointCloudType;
 typedef PointCloudType::Ptr PointCloudTypePtr;
 

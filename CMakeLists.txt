@@ -142,7 +142,8 @@ set(COMMON_SRC_LIST
         src/pointcloud_base.cpp
         src/file_io_util.cpp
         src/math_util.cpp
-        src/str_util.cpp)
+        src/str_util.cpp
+        src/time_util.cpp)
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context

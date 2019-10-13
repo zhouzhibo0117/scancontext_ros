@@ -78,13 +78,13 @@ void ScanContext::PointCloud2Image(PointCloudTypePtr &cloud) {
             if (ring_id < 0 || ring_id >= ring_num_ || sector_id < 0 || sector_id >= sector_num_) {
                 throw "[ERROR] Index Error!";
             } else {
-
+                // Push back a point to a bin.
                 cloud_bin_array[ring_id][sector_id]->push_back(cloud->points[i]);
+                // Find the maximum height point.
                 if (cloud->points[i].z > cloud_bin_array_max[ring_id][sector_id]) {
                     cloud_bin_array_max[ring_id][sector_id] = cloud->points[i].z;
                 }
             }
-
         }
         catch (const char *error_msg) {
             std::cerr << error_msg << std::endl;
@@ -95,6 +95,8 @@ void ScanContext::PointCloud2Image(PointCloudTypePtr &cloud) {
 
     for (int i = 0; i < ring_num_; ++i) {
         for (int j = 0; j < sector_num_; ++j) {
+
+            // Minimum points in a bin.
             if (cloud_bin_array[i][j]->points.size() < bin_points_min_) continue;
 
             image_.at<uchar>(i, j) = int(cloud_bin_array_max[i][j]);

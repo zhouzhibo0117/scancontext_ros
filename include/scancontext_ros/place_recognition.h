@@ -7,6 +7,8 @@
 
 #include "scan_context_matcher.h"
 
+#include "util/time_util.h"
+
 // ROS include
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>

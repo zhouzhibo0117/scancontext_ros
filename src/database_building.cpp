@@ -4,6 +4,8 @@
 
 #include "scancontext_ros/database_building.h"
 
+#include <ctime> // For debugging.
+
 DatabaseBuilding::DatabaseBuilding() {
     ros::NodeHandle nh;
     ros::NodeHandle pnh("~");
@@ -19,6 +21,8 @@ DatabaseBuilding::DatabaseBuilding() {
 }
 
 void DatabaseBuilding::PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr &cloud_msg) {
+
+    clock_t start_time = clock(); // For debugging.
 
     // ROS message to PCL message.
     // Transform sensor_msgs::PointCloud2 to PCL class.
@@ -39,6 +43,8 @@ void DatabaseBuilding::PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr
     // Save image
     SaveScanContextImageFile(sc, image_folder_path_);
 
+    // For debugging.
+    std::cout << "Total time: " << GetTimeInterval(start_time) * 1000 << " ms" << std::endl;
 
 }
 

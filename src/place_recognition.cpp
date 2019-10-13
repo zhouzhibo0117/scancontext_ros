@@ -17,10 +17,12 @@ PlaceRecognition::PlaceRecognition() {
 
     pointcloud_subscriber_ = nh.subscribe(pointcloud_topic_name_, 1, &PlaceRecognition::PointCloudCallback, this);
 
-    scm_.ReadDatabase(image_folder_path_);
+    scm_.LoadDatabase(image_folder_path_);
 }
 
 void PlaceRecognition::PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr &cloud_msg) {
+
+    clock_t start_time = clock(); // For debugging.
 
     // ROS message to PCL message.
     PointCloudTypePtr cloud_frame(new PointCloudType());
@@ -38,5 +40,8 @@ void PlaceRecognition::PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr
 
     scm_.SetTarget(sc_query);
 
-    scm_.GetCandidateID(50);
+    scm_.GetCandidateID(10);
+
+    // For debugging.
+    std::cout << "Total time: " << GetTimeInterval(start_time) * 1000 << " ms" << std::endl;
 }

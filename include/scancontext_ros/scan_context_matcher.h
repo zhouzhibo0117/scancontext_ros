@@ -14,7 +14,7 @@ class ScanContextMatcher {
 public:
     ScanContextMatcher() {};
 
-    void ReadDatabase(const std::string &image_folder_path);
+    void LoadDatabase(const std::string &image_folder_path);
 
     void SetTarget(const ScanContext &target);
 

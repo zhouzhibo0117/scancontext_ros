@@ -1,5 +1,5 @@
 <launch>
-    <arg name="database_env" default="kitti"/>
+    <arg name="database_env" default="kitti/00"/>
     <node pkg="scancontext_ros" type="place_recognition" name="place_recognition" output="screen">
 
         <param name="VoxelGirdFilter_size_x" type="double" value="0.5"/>
