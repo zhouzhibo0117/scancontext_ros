@@ -6,6 +6,8 @@
 
 void ScanContextMatcher::GetCandidatesWithDatabase() {
 
+    vec_scan_context_all_.clear();
+
     for (int i = 0; i < vec_sc_database_.size(); ++i) {
 
         double ring_key_dist = CalcRingKeyDistance(sc_target_, vec_sc_database_[i]);
@@ -51,30 +53,29 @@ void ScanContextMatcher::UpdateScanContextDistance() {
 
 }
 
-std::vector<std::string> ScanContextMatcher::GetCandidateID(int candidate_num) {
+void ScanContextMatcher::Solve(int candidate_num) {
 
     int vec_img_file_size = vec_sc_database_.size();
     candidate_num_ = candidate_num < vec_img_file_size ? candidate_num : vec_img_file_size;
 
     GetCandidatesWithDatabase();
 
-    for (int i = 0; i < vec_scan_context_candidate_.size(); ++i) {
-        std::cout<<vec_scan_context_candidate_[i].id<<"\n";
-    }
+//    for (int i = 0; i < vec_scan_context_candidate_.size(); ++i) {
+//        std::cout << vec_scan_context_candidate_[i].id << "\n";
+//    }
 
     UpdateScanContextDistance();
 
-    std::vector<std::string> output;
-    for (int i = 0; i < vec_scan_context_candidate_.size(); ++i) {
-        output.push_back(vec_scan_context_candidate_[i].id);
-    }
-
-    std::cout<<"output:"<<"\n";
-
-    for (int i = 0; i < output.size(); ++i) {
-        std::cout<<output[i]<<"\n";
-    }
-    return output;
+//    std::vector<std::string> output;
+//    for (int i = 0; i < vec_scan_context_candidate_.size(); ++i) {
+//        output.push_back(vec_scan_context_candidate_[i].id);
+//    }
+//
+//    std::cout << "output:" << "\n";
+//
+//    for (int i = 0; i < output.size(); ++i) {
+//        std::cout << output[i] << "\n";
+//    }
 }
 
 void ScanContextMatcher::LoadDatabase(const std::string &image_folder_path) {
@@ -89,7 +90,8 @@ void ScanContextMatcher::LoadDatabase(const std::string &image_folder_path) {
 
     for (int i = 0; i < vec_img_file_size; ++i) {
         std::string file_path = image_folder_path_ + vec_img_filename[i];
-        std::string img_id(SplitString(vec_img_filename[i], ".")[0]);
+        std::string img_id(SplitString(vec_img_filename[i], ".")[0] + "."
+                           + SplitString(vec_img_filename[i], ".")[1]);
         ScanContext sc_query(cv::imread(file_path), img_id);
 
         vec_sc_database_.push_back(sc_query);
@@ -166,6 +168,18 @@ bool ScanContextMatcher::CompareRingKeyDistanceFunction(const ScanContextDistanc
 bool ScanContextMatcher::CompareImageDistanceFunction(const ScanContextDistance &scd1,
                                                       const ScanContextDistance &scd2) {
     return scd1.image_dist < scd2.image_dist;
+}
+
+std::vector<std::vector<double>> ScanContextMatcher::GetCandidateInfo() {
+    std::vector<std::vector<double>> result;
+    for (int i = 0; i < vec_scan_context_candidate_.size() && i<5; ++i) {
+        std::vector<double> temp_info;
+        temp_info.push_back(String2Double(vec_scan_context_candidate_[i].id));
+        temp_info.push_back(vec_scan_context_candidate_[i].image_dist);
+
+        result.push_back(temp_info);
+    }
+    return result;
 }
 
 ScanContextMatcher::ScanContextDistance::ScanContextDistance(const std::string &id_input,

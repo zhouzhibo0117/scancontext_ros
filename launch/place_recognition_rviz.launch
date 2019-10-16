@@ -1,0 +1,35 @@
+<launch>
+    <arg name="database_env" default="kitti/00"/>
+    <node pkg="scancontext_ros" type="place_recognition" name="place_recognition" output="screen">
+
+        <param name="VoxelGirdFilter_size_x" type="double" value="0.5"/>
+        <param name="VoxelGirdFilter_size_y" type="double" value="0.5"/>
+        <param name="VoxelGirdFilter_size_z" type="double" value="0.5"/>
+
+        <param name="folder_path_to_save" type="string"
+               value="$(find scancontext_ros)/../../database/$(arg database_env)/"/>
+
+        <param name="pointcloud_topic_name" type="string" value="/kitti/velo/pointcloud"/>
+
+    </node>
+
+
+    <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz"
+          args="-d $(find scancontext_ros)/config/rviz/place_recognition.rviz"/>
+
+    <node pkg="scancontext_ros" type="visualization" name="visualization" output="screen">
+
+        <param name="map_resolution" type="double" value="0.1"/>
+        <param name="map_size" type="int" value="15"/>
+        <param name="map_center_x" type="int" value="150"/>
+        <param name="map_center_y" type="int" value="150"/>
+
+        <param name="pose_file_path" type="string"
+               value="$(find scancontext_ros)/../../map/$(arg database_env)/raw_map_info/odom.txt"/>
+        <param name="grid_map_folder_path" type="string"
+               value="$(find scancontext_ros)/../../map/$(arg database_env)/grid_map/"/>
+
+    </node>
+
+
+</launch>

@@ -140,13 +140,6 @@ void ScanContext::Image2RingKey() {
 }
 
 void ScanContext::SetScanContextID(const PointCloudTypePtr &cloud) {
-    uint64_t timestamp = cloud->header.stamp;
-    uint64_t integer_part = timestamp / 1e6;
-    uint64_t decimal_part = (double(timestamp / 1e6) - double(integer_part)) * 1000;
-
-    std::string str_integer = Int2FixedString(integer_part, 10);
-    std::string str_decimal = Int2FixedString(decimal_part, 3);
-
-    ID_ = str_integer + "_" + str_decimal;
+    ID_ = std::to_string(double(cloud->header.stamp) / 1e6);
 }
 

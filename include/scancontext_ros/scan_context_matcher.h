@@ -18,7 +18,9 @@ public:
 
     void SetTarget(const ScanContext &target);
 
-    std::vector<std::string> GetCandidateID(int candidate_num);
+    void Solve(int candidate_num);
+
+    std::vector<std::vector<double>> GetCandidateInfo();
 
 private:
     std::vector<ScanContext> vec_sc_database_;

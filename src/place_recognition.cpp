@@ -17,6 +17,8 @@ PlaceRecognition::PlaceRecognition() {
 
     pointcloud_subscriber_ = nh.subscribe(pointcloud_topic_name_, 1, &PlaceRecognition::PointCloudCallback, this);
 
+    result_publisher_ = nh.advertise<std_msgs::Float64MultiArray>("/place_recognition_result/array_info", 1000);
+
     scm_.LoadDatabase(image_folder_path_);
 }
 
@@ -30,17 +32,28 @@ void PlaceRecognition::PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr
 
     // scan context
     ScanContext sc_query(20,
-                   60,
-                   100,
-                   cloud_frame,
-                   5,
-                   leaf_size_x_,
-                   leaf_size_y_,
-                   leaf_size_z_);
+                         60,
+                         100,
+                         cloud_frame,
+                         5,
+                         leaf_size_x_,
+                         leaf_size_y_,
+                         leaf_size_z_);
 
     scm_.SetTarget(sc_query);
 
-    scm_.GetCandidateID(10);
+    scm_.Solve(50);
+
+    std::vector<std::vector<double>> result = scm_.GetCandidateInfo();
+
+    // Publish result.
+    std_msgs::Float64MultiArray out_msg;
+    for (int i = 0; i < result.size(); ++i) {
+        out_msg.data.push_back(result[i][0]);
+        out_msg.data.push_back(result[i][1]);
+    }
+
+    result_publisher_.publish(out_msg);
 
     // For debugging.
     std::cout << "Total time: " << GetTimeInterval(start_time) * 1000 << " ms" << std::endl;

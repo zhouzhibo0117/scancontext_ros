@@ -12,12 +12,14 @@
 // ROS include
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <std_msgs/Float64MultiArray.h>
 #include <pcl_conversions/pcl_conversions.h>
 
 class PlaceRecognition {
 public:
     PlaceRecognition();
 
+private:
     void PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr &cloud_msg);
 
 private:
@@ -27,6 +29,8 @@ private:
     std::string pointcloud_topic_name_;
 
     ros::Subscriber pointcloud_subscriber_;
+
+    ros::Publisher result_publisher_;
 
     // Parameters for VoxelGrid filter.
     double leaf_size_x_;

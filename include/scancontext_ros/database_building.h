@@ -19,9 +19,9 @@ class DatabaseBuilding {
 public:
     DatabaseBuilding();
 
+private:
     void PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr &cloud_msg);
 
-private:
     void SaveScanContextImageFile(ScanContext &sc, std::string &folder_path);
 
 private:
