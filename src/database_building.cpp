@@ -33,7 +33,7 @@ void DatabaseBuilding::PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr
     // scan context
     ScanContext sc(20,
                    60,
-                   100,
+                   80,
                    cloud_frame,
                    5,
                    leaf_size_x_,

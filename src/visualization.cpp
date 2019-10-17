@@ -46,14 +46,14 @@ void Visualization::ResultArrayCallback(const std_msgs::Float64MultiArrayConstPt
         double prob = 1 - array_msg->data[2 * i + 1];
         marker.id = i;
         marker.pose.position = candidate_point;
-        marker.scale.x = marker.scale.y = marker.scale.z = prob * 5;
+        marker.scale.x = marker.scale.y = marker.scale.z = prob * 10;
         marker.scale.z = prob * 10;
 
         marker_array.markers.push_back(marker);
 
         std::cout << std::to_string(array_msg->data[2 * i]) << '\t' <<
                   std::to_string(candidate_point.x) << '\t' <<
-                  std::to_string(candidate_point.x) << '\n';
+                  std::to_string(candidate_point.y) << '\n';
     }
 
     candidate_publisher_.publish(marker_array);
@@ -83,7 +83,6 @@ void Visualization::LoadMap(int center_x, int center_y,
 
     // Read map.
     for (int i = 0; i < map_size; ++i) {
-        //#pragma omp parallel for
         for (int j = 0; j < map_size; ++j) {
             int new_center_x = center_x + square_size * (i - map_size / 2);
             int new_center_y = center_y + square_size * (j - map_size / 2);
@@ -98,7 +97,6 @@ void Visualization::LoadMap(int center_x, int center_y,
 
             if (!image_in.loadFromFile(file_path, 0)) {
                 for (int x = 0; x < image_size; ++x) {
-                    //#pragma omp parallel for
                     for (int y = 0; y < image_size; ++y) {
                         int square_index_x = x + i * image_size;
                         int square_index_y = y + j * image_size;
@@ -107,7 +105,6 @@ void Visualization::LoadMap(int center_x, int center_y,
                 }
             } else {
                 for (int x = 0; x < image_size; ++x) {
-                    //#pragma omp parallel for
                     for (int y = 0; y < image_size; ++y) {
                         int square_index_x = x + i * image_size;
                         int square_index_y = y + j * image_size;

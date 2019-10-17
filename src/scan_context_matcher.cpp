@@ -7,6 +7,7 @@
 void ScanContextMatcher::GetCandidatesWithDatabase() {
 
     vec_scan_context_all_.clear();
+    vec_scan_context_candidate_.clear();
 
     for (int i = 0; i < vec_sc_database_.size(); ++i) {
 
@@ -137,12 +138,12 @@ double ScanContextMatcher::CalcImageDistance(const ScanContext &target, const Sc
             double dot_sum = 0.0;
             for (int i = 0; i < ring_num; ++i) {
                 // TODO:???最高的高度全部转化为了整数，精度有损失。
-                dot_sum += target.image_.at<uchar>(i, j) *
-                           query.image_.at<uchar>(i, jj);
-                norm_sum_target += target.image_.at<uchar>(i, j) *
-                                   target.image_.at<uchar>(i, j);
-                norm_sum_query += query.image_.at<uchar>(i, jj) *
-                                  query.image_.at<uchar>(i, jj);
+                dot_sum += target.image_.at<double>(i, j) *
+                           query.image_.at<double>(i, jj);
+                norm_sum_target += target.image_.at<double>(i, j) *
+                                   target.image_.at<double>(i, j);
+                norm_sum_query += query.image_.at<double>(i, jj) *
+                                  query.image_.at<double>(i, jj);
             }
             if (dot_sum == 0.0) {
                 continue;
@@ -156,6 +157,9 @@ double ScanContextMatcher::CalcImageDistance(const ScanContext &target, const Sc
 
     double vec_cos_similarity_max = (*max_element(vec_cos_similarity_sum.begin(),
                                                   vec_cos_similarity_sum.end()));
+
+    if (vec_cos_similarity_max > 1) vec_cos_similarity_max = 1;
+    if (vec_cos_similarity_max < 0) vec_cos_similarity_max = 0;
 
     return 1 - vec_cos_similarity_max;
 }
@@ -172,7 +176,7 @@ bool ScanContextMatcher::CompareImageDistanceFunction(const ScanContextDistance 
 
 std::vector<std::vector<double>> ScanContextMatcher::GetCandidateInfo() {
     std::vector<std::vector<double>> result;
-    for (int i = 0; i < vec_scan_context_candidate_.size() && i<5; ++i) {
+    for (int i = 0; i < vec_scan_context_candidate_.size() && i<1; ++i) {
         std::vector<double> temp_info;
         temp_info.push_back(String2Double(vec_scan_context_candidate_[i].id));
         temp_info.push_back(vec_scan_context_candidate_[i].image_dist);
