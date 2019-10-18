@@ -9,6 +9,8 @@
 
 #include "util/time_util.h"
 
+#include <random>
+
 // ROS include
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>

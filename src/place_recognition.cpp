@@ -17,7 +17,7 @@ PlaceRecognition::PlaceRecognition() {
 
     pointcloud_subscriber_ = nh.subscribe(pointcloud_topic_name_, 1, &PlaceRecognition::PointCloudCallback, this);
 
-    result_publisher_ = nh.advertise<std_msgs::Float64MultiArray>("/place_recognition_result/array_info", 1000);
+    result_publisher_ = nh.advertise<std_msgs::Float64MultiArray>("/place_recognition_result/array_info", 1);
 
     scm_.LoadDatabase(image_folder_path_);
 }
@@ -29,6 +29,15 @@ void PlaceRecognition::PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr
     // ROS message to PCL message.
     PointCloudTypePtr cloud_frame(new PointCloudType());
     pcl::fromROSMsg(*cloud_msg, *cloud_frame);
+
+    // Define random generator with Gaussian distribution
+    std::default_random_engine generator;
+    std::normal_distribution<double> dist(0.0, 0.1);
+
+    // Add white noise and change coordinate reference.
+    TransformPointcloud(cloud_frame,
+                        dist(generator), dist(generator), 0,
+                        0, 0, 0);
 
     // scan context
     ScanContext sc_query(20,
@@ -56,5 +65,5 @@ void PlaceRecognition::PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr
     result_publisher_.publish(out_msg);
 
     // For debugging.
-    std::cout << "Total time: " << GetTimeInterval(start_time) * 1000 << " ms" << std::endl;
+    std::cout << "Runtime per frame: " << GetTimeInterval(start_time) * 1000 << " ms" << std::endl;
 }

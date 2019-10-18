@@ -5,8 +5,6 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /Status1
-        - /Odometry1/Shape1
         - /MarkerArray1/Namespaces1
       Splitter Ratio: 0.5
     Tree Height: 657
@@ -56,7 +54,7 @@ Visualization Manager:
       Cell Size: 1
       Class: rviz/Grid
       Color: 0; 0; 0
-      Enabled: true
+      Enabled: false
       Line Style:
         Line Width: 0.0299999993
         Value: Lines
@@ -69,20 +67,6 @@ Visualization Manager:
       Plane: XY
       Plane Cell Count: 10000
       Reference Frame: map
-      Value: true
-    - Class: rviz/Axes
-      Enabled: false
-      Length: 4
-      Name: Map_Axes
-      Radius: 0.300000012
-      Reference Frame: map
-      Value: false
-    - Class: rviz/Axes
-      Enabled: false
-      Length: 2
-      Name: Lidar_Axes
-      Radius: 0.200000003
-      Reference Frame: lidar
       Value: false
     - Alpha: 1
       Class: rviz/Map
@@ -94,36 +78,6 @@ Visualization Manager:
       Unreliable: false
       Use Timestamp: false
       Value: true
-    - Alpha: 1
-      Autocompute Intensity Bounds: true
-      Autocompute Value Bounds:
-        Max Value: 2.23973846
-        Min Value: 0.440103531
-        Value: true
-      Axis: Z
-      Channel Name: intensity
-      Class: rviz/PointCloud2
-      Color: 255; 0; 0
-      Color Transformer: FlatColor
-      Decay Time: 0
-      Enabled: false
-      Invert Rainbow: false
-      Max Color: 255; 255; 255
-      Max Intensity: 200.018005
-      Min Color: 0; 0; 0
-      Min Intensity: 0.00200000009
-      Name: PointCloud2
-      Position Transformer: XYZ
-      Queue Size: 1
-      Selectable: false
-      Size (Pixels): 3
-      Size (m): 0.300000012
-      Style: Flat Squares
-      Topic: /registered_cloud
-      Unreliable: false
-      Use Fixed Frame: true
-      Use rainbow: true
-      Value: false
     - Class: rviz/Marker
       Enabled: false
       Marker Topic: /RESULT_TEXT
@@ -131,40 +85,6 @@ Visualization Manager:
       Namespaces:
         {}
       Queue Size: 100
-      Value: false
-    - Angle Tolerance: 0.100000001
-      Class: rviz/Odometry
-      Covariance:
-        Orientation:
-          Alpha: 0.5
-          Color: 255; 255; 127
-          Color Style: Unique
-          Frame: Local
-          Offset: 1
-          Scale: 1
-          Value: true
-        Position:
-          Alpha: 0.300000012
-          Color: 204; 51; 204
-          Scale: 1
-          Value: true
-        Value: true
-      Enabled: false
-      Keep: 100000
-      Name: Odometry
-      Position Tolerance: 0.100000001
-      Shape:
-        Alpha: 1
-        Axes Length: 1
-        Axes Radius: 0.100000001
-        Color: 255; 25; 0
-        Head Length: 0.300000012
-        Head Radius: 0.100000001
-        Shaft Length: 1
-        Shaft Radius: 0.0500000007
-        Value: Axes
-      Topic: /map_matching_result/utm
-      Unreliable: false
       Value: false
     - Class: rviz/MarkerArray
       Enabled: true
@@ -198,26 +118,21 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Class: rviz/ThirdPersonFollower
-      Distance: 795.795593
+      Angle: 0
+      Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
-      Focal Point:
-        X: 32.4240608
-        Y: 0.211677372
-        Z: 0.00011776427
-      Focal Shape Fixed Size: true
-      Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.670398176
+      Scale: 1.21314752
       Target Frame: <Fixed Frame>
-      Value: ThirdPersonFollower (rviz)
-      Yaw: 4.08356524
+      Value: TopDownOrtho (rviz)
+      X: 155.004089
+      Y: 171.510605
     Saved: ~
 Window Geometry:
   Displays:
@@ -235,5 +150,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1537
-  X: 383
-  Y: 119
+  X: 295
+  Y: 106

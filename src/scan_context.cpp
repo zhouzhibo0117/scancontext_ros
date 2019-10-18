@@ -87,7 +87,7 @@ void ScanContext::PointCloud2Image(PointCloudTypePtr &cloud) {
             }
         }
         catch (const char *error_msg) {
-            std::cerr << error_msg << std::endl;
+//            std::cerr << error_msg << std::endl;
         }
 
 
@@ -99,7 +99,7 @@ void ScanContext::PointCloud2Image(PointCloudTypePtr &cloud) {
             // Minimum points in a bin.
             if (cloud_bin_array[i][j]->points.size() < bin_points_min_) continue;
 
-            image_.at<double>(i, j) = cloud_bin_array_max[i][j];
+            image_.at<float>(i, j) = cloud_bin_array_max[i][j];
         }
     }
 }
@@ -108,10 +108,10 @@ void ScanContext::ImageInitialization() {
     ring_gap_ = point_range_max_ / ring_num_;
     sector_gap_ = 2 * M_PI / sector_num_;
 
-    image_.create(ring_num_, sector_num_, CV_64FC1);
+    image_.create(ring_num_, sector_num_, CV_32FC1);
     for (int i = 0; i < ring_num_; ++i) {
         for (int j = 0; j < sector_num_; ++j) {
-            image_.at<double>(i, j) = 0;
+            image_.at<float>(i, j) = 0;
         }
     }
 }
@@ -126,7 +126,7 @@ void ScanContext::Image2RingKey() {
         int non_zero_element_num = 0;
         for (int j = 0; j < sector_num_; ++j) {
             if (i >= 0 && j >= 0) {
-                if (image_.at<double>(i, j) > 1e-2) {
+                if (image_.at<float>(i, j) > 1e-2) {
                     non_zero_element_num++;
                 }
             }
@@ -134,7 +134,6 @@ void ScanContext::Image2RingKey() {
         ring_key_.push_back(double(non_zero_element_num));
     }
 
-    // Normalization.
     for (int i = 0; i < ring_num_; ++i) {
         ring_key_[i] /= double(sector_num_);
     }

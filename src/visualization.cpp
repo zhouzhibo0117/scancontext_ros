@@ -15,7 +15,7 @@ Visualization::Visualization() {
     pnh.param<int>("map_center_x", map_center_x_, 0);
     pnh.param<int>("map_center_y", map_center_y_, 0);
 
-    result_array_subscriber_ = nh.subscribe("/place_recognition_result/array_info", 1000,
+    result_array_subscriber_ = nh.subscribe("/place_recognition_result/array_info", 1,
                                             &Visualization::ResultArrayCallback, this);
 
     candidate_publisher_ = nh.advertise<visualization_msgs::MarkerArray>("/place_recognition_result/markers",
@@ -34,31 +34,55 @@ void Visualization::ResultArrayCallback(const std_msgs::Float64MultiArrayConstPt
     visualization_msgs::MarkerArray marker_array;
     visualization_msgs::Marker marker;
     marker.header.frame_id = "map";
-    marker.color.r = 1.0f;
-    marker.color.g = 0.0f;
-    marker.color.b = 0.0f;
-    marker.color.a = 1.0f;
+    marker.scale.z = 0.001;
     marker.type = visualization_msgs::Marker::SPHERE;
     marker.action = visualization_msgs::Marker::ADD;
 
+    visualization_msgs::Marker marker_delete;
+    marker_delete.header.frame_id = "map";
+    marker_delete.action = visualization_msgs::Marker::DELETEALL;
+    marker_array.markers.push_back(marker_delete);
+    candidate_publisher_.publish(marker_array);
+
+    marker_array.markers.clear();
+    double prob_sum = 0.0;
+    int max_index = 0;
+    for (int i = 0; i < array_msg->data.size() / 2; ++i) {
+        prob_sum += 1 - array_msg->data[2 * i + 1];
+        if (array_msg->data[2 * i + 1] < 0.2) {
+            if (array_msg->data[2 * i + 1] <= array_msg->data[2 * max_index + 1]) {
+                max_index = i;
+            }
+        }
+    }
     for (int i = 0; i < array_msg->data.size() / 2; ++i) {
         geometry_msgs::Point candidate_point = GetPosition(array_msg->data[2 * i], 0.1);
         double prob = 1 - array_msg->data[2 * i + 1];
         marker.id = i;
         marker.pose.position = candidate_point;
-        marker.scale.x = marker.scale.y = marker.scale.z = prob * 10;
-        marker.scale.z = prob * 10;
+        if (prob > 0.8) {
+            marker.color.r = 1.0f;
+            marker.color.g = 0.0f;
+            marker.color.b = 0.0f;
+            if (i == max_index) {
+                marker.scale.x = marker.scale.y = 10;
+                marker.color.a = 1;
+            } else {
+                marker.scale.x = marker.scale.y = 7;
+                marker.color.a = prob / prob_sum + 0.2;
+            }
+        } else {
+            marker.color.r = 0.0f;
+            marker.color.g = 0.0f;
+            marker.color.b = 1.0f;
+            marker.scale.x = marker.scale.y = 5;
+            marker.color.a = prob / prob_sum + 0.1;
+        }
 
         marker_array.markers.push_back(marker);
-
-        std::cout << std::to_string(array_msg->data[2 * i]) << '\t' <<
-                  std::to_string(candidate_point.x) << '\t' <<
-                  std::to_string(candidate_point.y) << '\n';
     }
 
     candidate_publisher_.publish(marker_array);
-
-
 }
 
 void Visualization::LoadMap(int center_x, int center_y,

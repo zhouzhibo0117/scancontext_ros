@@ -44,13 +44,15 @@ void DatabaseBuilding::PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr
     SaveScanContextImageFile(sc, image_folder_path_);
 
     // For debugging.
-    std::cout << "Total time: " << GetTimeInterval(start_time) * 1000 << " ms" << std::endl;
+    std::cout << "Runtime per frame: " << GetTimeInterval(start_time) * 1000 << " ms" << std::endl;
 
 }
 
 void DatabaseBuilding::SaveScanContextImageFile(ScanContext &sc, std::string &folder_path) {
-    std::string full_path = folder_path + sc.ID_ + ".png";
-    cv::imwrite(full_path, sc.image_);
+    std::string full_path = folder_path + sc.ID_ + ".xml";
+    cv::FileStorage fs(full_path, cv::FileStorage::WRITE);
+    fs << "scan_context" << sc.image_;
+    fs.release();
 }
 
 

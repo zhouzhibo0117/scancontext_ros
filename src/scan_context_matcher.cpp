@@ -28,11 +28,13 @@ void ScanContextMatcher::GetCandidatesWithDatabase() {
 
 void ScanContextMatcher::UpdateScanContextDistance() {
     for (int i = 0; i < candidate_num_; ++i) {
-        std::string img_filename = vec_scan_context_candidate_[i].id + ".png";
-        std::string file_path = image_folder_path_ + img_filename;
+        std::string img_filename = vec_scan_context_candidate_[i].id + ".xml";
+        std::string file_path = database_folder_path_ + img_filename;
+        cv::FileStorage fs(file_path, cv::FileStorage::READ);
+        cv::Mat img_in;
+        fs["scan_context"] >> img_in;
 
-        ScanContext sc_query(cv::imread(file_path),
-                             vec_scan_context_candidate_[i].id);
+        ScanContext sc_query(img_in, vec_scan_context_candidate_[i].id);
 
         double image_dist = CalcImageDistance(sc_target_, sc_query);
 
@@ -45,12 +47,12 @@ void ScanContextMatcher::UpdateScanContextDistance() {
               CompareImageDistanceFunction);
 
     // Threshing.vec_scan_context_candidate_
-    std::vector<ScanContextDistance>::iterator iter = vec_scan_context_candidate_.begin();
-    while (iter->image_dist < 0.2 &&
-           iter < vec_scan_context_candidate_.end()) {
-        iter++;
-    }
-    vec_scan_context_candidate_.resize(iter - vec_scan_context_candidate_.begin());
+//    std::vector<ScanContextDistance>::iterator iter = vec_scan_context_candidate_.begin();
+//    while (iter->image_dist < 0.2 &&
+//           iter < vec_scan_context_candidate_.end()) {
+//        iter++;
+//    }
+//    vec_scan_context_candidate_.resize(iter - vec_scan_context_candidate_.begin());
 
 }
 
@@ -61,43 +63,30 @@ void ScanContextMatcher::Solve(int candidate_num) {
 
     GetCandidatesWithDatabase();
 
-//    for (int i = 0; i < vec_scan_context_candidate_.size(); ++i) {
-//        std::cout << vec_scan_context_candidate_[i].id << "\n";
-//    }
-
     UpdateScanContextDistance();
-
-//    std::vector<std::string> output;
-//    for (int i = 0; i < vec_scan_context_candidate_.size(); ++i) {
-//        output.push_back(vec_scan_context_candidate_[i].id);
-//    }
-//
-//    std::cout << "output:" << "\n";
-//
-//    for (int i = 0; i < output.size(); ++i) {
-//        std::cout << output[i] << "\n";
-//    }
 }
 
-void ScanContextMatcher::LoadDatabase(const std::string &image_folder_path) {
-    image_folder_path_ = image_folder_path;
+void ScanContextMatcher::LoadDatabase(const std::string &database_folder_path) {
+    database_folder_path_ = database_folder_path;
 
-    std::vector<std::string> vec_img_filename = GetFilesInFolder(image_folder_path_);
+    std::vector<std::string> vec_db_filename = GetFilesInFolder(database_folder_path_);
 
-    int vec_img_file_size = vec_img_filename.size();
+    int vec_db_file_size = vec_db_filename.size();
 
-    std::cout << "[INFO] Loading " << vec_img_file_size << " images in " << image_folder_path_ << ".\n";
+    std::cout << "[INFO] Loading " << vec_db_file_size << " images in " << database_folder_path_ << ".\n";
     std::cout << "[INFO] Processing... " << "\n";
 
-    for (int i = 0; i < vec_img_file_size; ++i) {
-        std::string file_path = image_folder_path_ + vec_img_filename[i];
-        std::string img_id(SplitString(vec_img_filename[i], ".")[0] + "."
-                           + SplitString(vec_img_filename[i], ".")[1]);
-        ScanContext sc_query(cv::imread(file_path), img_id);
+    for (int i = 0; i < vec_db_file_size; ++i) {
+        std::string file_path = database_folder_path_ + vec_db_filename[i];
+        std::string img_id(SplitString(vec_db_filename[i], ".")[0] + "."
+                           + SplitString(vec_db_filename[i], ".")[1]);
+        cv::FileStorage fs(file_path, cv::FileStorage::READ);
+        cv::Mat img_in;
+        fs["scan_context"] >> img_in;
+        ScanContext sc_query(img_in, img_id);
 
         vec_sc_database_.push_back(sc_query);
     }
-
     std::cout << "[INFO] Database loading finished." << '\n';
 }
 
@@ -123,7 +112,6 @@ double ScanContextMatcher::CalcRingKeyDistance(const ScanContext &target,
 }
 
 double ScanContextMatcher::CalcImageDistance(const ScanContext &target, const ScanContext &query) {
-    // TODO 数值大小还是距离大小？排序是由小到大排序
     int ring_num = target.image_.size().height;
     int sector_num = target.image_.size().width;
     std::vector<double> vec_cos_similarity_sum;
@@ -137,13 +125,12 @@ double ScanContextMatcher::CalcImageDistance(const ScanContext &target, const Sc
             double norm_sum_query = 0.0;
             double dot_sum = 0.0;
             for (int i = 0; i < ring_num; ++i) {
-                // TODO:???最高的高度全部转化为了整数，精度有损失。
-                dot_sum += target.image_.at<double>(i, j) *
-                           query.image_.at<double>(i, jj);
-                norm_sum_target += target.image_.at<double>(i, j) *
-                                   target.image_.at<double>(i, j);
-                norm_sum_query += query.image_.at<double>(i, jj) *
-                                  query.image_.at<double>(i, jj);
+                dot_sum += target.image_.at<float>(i, j) *
+                           query.image_.at<float>(i, jj);
+                norm_sum_target += target.image_.at<float>(i, j) *
+                                   target.image_.at<float>(i, j);
+                norm_sum_query += query.image_.at<float>(i, jj) *
+                                  query.image_.at<float>(i, jj);
             }
             if (dot_sum == 0.0) {
                 continue;
@@ -176,7 +163,7 @@ bool ScanContextMatcher::CompareImageDistanceFunction(const ScanContextDistance 
 
 std::vector<std::vector<double>> ScanContextMatcher::GetCandidateInfo() {
     std::vector<std::vector<double>> result;
-    for (int i = 0; i < vec_scan_context_candidate_.size() && i<1; ++i) {
+    for (int i = 0; i < vec_scan_context_candidate_.size(); ++i) {
         std::vector<double> temp_info;
         temp_info.push_back(String2Double(vec_scan_context_candidate_[i].id));
         temp_info.push_back(vec_scan_context_candidate_[i].image_dist);
